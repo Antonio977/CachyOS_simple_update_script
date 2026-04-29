@@ -1,0 +1,29 @@
+source /usr/share/cachyos-fish-config/cachyos-config.fish
+
+# overwrite greeting
+# potentially disabling fastfetch
+#function fish_greeting
+#    # smth smth
+#end
+
+function allupdate
+    set_color cyan; echo "🚀 Inizio aggiornamento CachyOS (Repo + AUR)..."; set_color normal
+    paru -Syu
+
+    set_color blue; echo "📦 Controllo aggiornamenti Flatpak..."; set_color normal
+    flatpak update -y
+
+    set_color yellow; echo "🧹 Ricerca pacchetti orfani..."; set_color normal
+    set orfani (pacman -Qdtq)
+    if test -n "$orfani"
+        echo "Rilevati orfani: $orfani"
+        paru -Rns $orfani
+    else
+        set_color green; echo "✅ Nessun pacchetto orfano da rimuovere."; set_color normal
+    end
+
+    set_color magenta; echo "💾 Pulizia cache pacchetti (mantenendo gli ultimi 3)..."; set_color normal
+    sudo paccache -r
+
+    set_color green; echo "✨ Manutenzione completata con successo!"; set_color normal
+end
